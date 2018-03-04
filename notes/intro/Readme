@@ -1,0 +1,8 @@
+测试了intro中的函数daytimetcpcli和daytimetcpser。
+编译好后，使用tmux打开两个窗口，第一个窗口运行daytimetcpser（要先运行），第二窗口运行daytimetcpcli
+注意：
+    在同一主机上测试，客户端运行的IP是127.0.0.1
+    也可以在两个主机上运行程序，客户端的IP是运行服务器主机程序的IP
+    两个函数都要用管理员权限运行，否则提示Permission denied
+    运行daytimetcpser后，如果没有使用ctrl+c终止进程，下次运行会提示bind error:Address already in use我采用重启机器解决的这个提示，应该还有其他办法，但是没有测试
+    测试时，虽然服务器分开调用write函数，客户端也是一次性接收了所有的消息。服务器这里以26字节的分节发送数据所以一次收到了，不过服务器也可能将26个字节分成几个分节来发.
