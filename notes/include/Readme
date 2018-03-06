@@ -1,0 +1,4 @@
+这里存储用到的网络编程所需要的系统头文件，在编译程序时，对于这些系统头文件，编译器默认搜索/usr/include,/usr/local/include等文件夹，一般不需要在makefile中指定，对于自己定义的头文件则需要指定。
+以及UNIX网络编程教材中实现的相关函数的头文件
+netinet文件夹复制于/usr/include内
+sys文件夹复制于/usr/include/x86_64-linux-gnu/sys，因为/usr/include文件夹内没有socket.h
