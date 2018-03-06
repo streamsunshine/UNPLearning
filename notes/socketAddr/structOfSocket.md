@@ -60,7 +60,8 @@ struct in6_addr
     struct in6_addr sin6_addr;	/* IPv6 address */
     uint32_t sin6_scope_id;	/* IPv6 scope-id */
   };
-```   在IPv6地址结构中，如果sockaddr_in6是64位对其的，则sin6_addr也是64位对齐的。  固定大小28B
+```
+在IPv6地址结构中，如果sockaddr_in6是64位对其的，则sin6_addr也是64位对齐的。  固定大小28B
 
 ## 新的通用套接字地址结构  
 在bits/socket.h文件中,定义如下：
