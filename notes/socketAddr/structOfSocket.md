@@ -1,4 +1,4 @@
-##通用套接字结构
+## 通用套接字结构
 文件bits/socket.h,在sys/socket.h中定义的是osockaddr.
 ```c
 typedef unsigned short int sa_family_t;
@@ -15,7 +15,7 @@ typedef unsigned short int sa_family_t;
 ```  
 其中的##用来连接字符，对于sockaddr结构来说，其第一行为sa_family_t sa_family  
 由于套接字函数需要处理所支持的任何协议族的套接字地址结构，所以需要定义一个通用的套接字地址结构，在调用套接字函数时，需要将套接字地址结构的引用强制转换为通用套接字结构的引用。
-##IPv4的套接字地址结构
+## IPv4的套接字地址结构
 定义在/netinet/in.h
 ```c
 typedef uint32_t in_addr_t;
@@ -40,7 +40,7 @@ struct sockaddr_in
 在使用套接字地址结构时，总是将其置0。套接字地址结构只在给定的主机上使用，并不在主机之间传递。  
 固定大小16B
 
-##IPv6的套接字地址结构
+## IPv6的套接字地址结构
 ```c
 struct in6_addr
   {
@@ -62,7 +62,7 @@ struct in6_addr
   };
 ```   在IPv6地址结构中，如果sockaddr_in6是64位对其的，则sin6_addr也是64位对齐的。  固定大小28B
 
-##新的通用套接字地址结构  
+## 新的通用套接字地址结构  
 在bits/socket.h文件中,定义如下：
 ```c
 /* Structure large enough to hold any socket address (with the historical
