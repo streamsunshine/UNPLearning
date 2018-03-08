@@ -32,8 +32,8 @@
 `int inet_aton(const char *strptr,struct in_addr *addrptr);`   
 功能:该函数用来将点分十进制的IP地址转换为32位的网络字节的IPv4地址。  
 `strptr`存储点分十进制的值；`addrptr`存储转换后的结果  
-当`addrptr`为空指针时，不存储任何结果。  
-成功返回1，失败返回0  
+成功返回1，失败返回0   
+注意：当`addrptr`为空指针时，函数不向其中写入任何值。  
   
 `in_addr_t inet_addr(const char *strptr);`  
 该函数直接将结果返回。出错时返回INADDR_NONE(全1)，容易引发问题，已经被弃用。  
@@ -55,10 +55,10 @@ family:可以是AF_INET或AF_INET6
 成功返回：strptr的值  
 失败返回：空指针，当len太小，同时置errno为ENOSPC；当family为不支持的地址族同时将errno置为EAFNOSUPPORT  
 注意：为了保证len足够在`netinet/in.h`中定义了如下的两个值，用于指定len  
-...c
+```c
 #define INET_ADDRSTRLEN 16
 #define INET6_ADDRSTRLEN 46
-...
+```  
 以上的定义表示字节数  
 
 ## 调整字节顺序的函数
