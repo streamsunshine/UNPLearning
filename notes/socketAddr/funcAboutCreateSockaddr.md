@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 ##处理结构的整体函数
 这些函数将套接字当做以字节为单位的数组，进行操作。有两组具有相同功能的函数。
 
 ###改值函数`bzero,memset`
+=======
+## 处理结构的整体函数
+这些函数将套接字当做以字节为单位的数组，进行操作。有两组具有相同功能的函数。
+
+### 改值函数`bzero,memset`
+>>>>>>> featureSockaddr
 头文件为`strings.h`  
 函数声明：  
 `void bzero(void *dest,size_t len);`
@@ -10,22 +17,36 @@
 dest:目标数组的头指针  
 len:想要转换的元素个数  
 
+<<<<<<< HEAD
 ###复制函数`bcopy,memcpy`
+=======
+### 复制函数`bcopy,memcpy`
+>>>>>>> featureSockaddr
 函数原型：  
 `void bcopy(const void *src,void *dest,size_t nbytes);`  
 `void *memcpy(void *dest,const void *src,size_t nbytes);`  
 功能：将nbytes的src中的元素复制到dest  
 注意：memcpy不能处理dest和src相等的情况。  
 
+<<<<<<< HEAD
 ###比较函数`bmp,memcmp`
+=======
+### 比较函数`bmp,memcmp`
+>>>>>>> featureSockaddr
 函数原型：  
 `int bcmp(cosnt void *front,const void *last,size_t nbytes);`  
 `int memcmp(cosnt void *front,const void *last,size_t nbytes);`  
 功能：如果front>last返回正数，相等返回0，小于返回负数.
   
+<<<<<<< HEAD
 ##IP地址转化的函数
 在ASCII字符和网络字节序的二进制值（存放在套接字地质结构中的值）之间进行转化。
 ###IPv4转化函数
+=======
+## IP地址转化的函数
+在ASCII字符和网络字节序的二进制值（存放在套接字地质结构中的值）之间进行转化。
+### IPv4转化函数
+>>>>>>> featureSockaddr
 头文件`arpa/inet.h`  
 这些函数只能用于IPv4的转换，目前更多使用的是后面要说的IP地址转换函数  
 `int inet_aton(const char *strptr,struct in_addr *addrptr);`  
@@ -39,7 +60,11 @@ len:想要转换的元素个数
 `char *inet_ntoa(struct in_addr inaddr);`  
 注意：1.该函数返回值存在静态内存中，所以该函数不能重入。
 
+<<<<<<< HEAD
 ###IPv4&IIPv6通用的转换函数
+=======
+### IPv4&IIPv6通用的转换函数
+>>>>>>> featureSockaddr
 头文件`arpa/inet.h`  
 `int inet_pton(int family,const char *strptr,void *addrptr);`  
 功能：将字符串的IP地址转化为存储在addrptr中的数值地址  
@@ -58,16 +83,27 @@ family:可以是AF_INET或AF_INET6
 ...
 以上的定义表示字节数  
 
+<<<<<<< HEAD
 ##调整字节顺序的函数
 对于主机字节序和网络字节序不同的，将两种字节序（大端小端）之间相互转换。
 
 ###主机转到网络
+=======
+## 调整字节顺序的函数
+对于主机字节序和网络字节序不同的，将两种字节序（大端小端）之间相互转换。
+
+### 主机转到网络
+>>>>>>> featureSockaddr
 头文件`netinet/in.h`  
 `uint16_t htons(uint16_t host16value);`  
 `uint32_t htonl(uint32_t host32value);`  
 分别用于将16位和32位的主机字序的数据转换为网络字节序。  
 
+<<<<<<< HEAD
 ###网络到主机
+=======
+### 网络到主机
+>>>>>>> featureSockaddr
 头文件`netinet/in.h`  
 `uint16_t ntohs(uint16_t net16value);`  
 `uint32_t ntohl(uint32_t net32value);`  
