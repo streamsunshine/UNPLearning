@@ -7,11 +7,13 @@
 #include <netinet/in.h> //seq bytes adjust,socket address
 #include <stdio.h>      //printf
 #include <unistd.h>     //fork,exec,write
+#include <sys/wait.h>     //waitpid
 
 const unsigned int MAXLEN = 100;
 const int portNum = 9600;
 
 void str_serv(FILE *fd,int sockfd);
+void sigChildHandler(int sig);
 
 int main()
 {
@@ -46,8 +48,15 @@ int main()
         exit(-1);
     }
 
-    while((connectfd = accept(sockfd,NULL,NULL)) > 0)
+    signal(SIGCHLD, sigChildHandler);
+
+    while(1)
     {
+        if((connectfd = accept(sockfd,NULL,NULL)) < 0)
+        {
+            if(errno == EINTR)
+              continue;
+        }
         if((n = fork()) < 0)
         {
             printf("Create process child failed!");
@@ -64,11 +73,8 @@ int main()
             close(connectfd);
         }
     }
-    if(connectfd < 0)
-    {
-        printf("Accept wrong!");
-    }
 }
+
 void str_serv(FILE *fd,int sockfd)  //the fd parameter seems useless
 {
     int nreaded;
@@ -96,3 +102,12 @@ again:
     }
 }
 
+void  sigChildHandler(int sig)
+{
+    pid_t pid;    //store the pid of ended child process
+
+    while((pid = waitpid(-1,NULL,WNOHANG)) > 0)    //pid为0时，说明没有退出的进程可收集
+      printf("The child process %d end\n",pid);
+    
+    return;
+}
