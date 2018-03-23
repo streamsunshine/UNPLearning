@@ -114,3 +114,108 @@ l表示参数一个一个给出； v表示参数由参数数组给出； e表示
 成功:返回非负整数
 失败:返回EOF（值为-1）
 
+### waitpid
+
+头文件：sys/wait.h;sys/types.h提供pid_t的定义
+
+用于处理僵死进程。
+
+`pid_t waitpid(pid_t pid,int *statloc,int options);`
+
+**pid**:指定想要等待的进程ID，值-1表示等待的第一个终止的子进程。 
+
+**statloc**:用来获取子进程的中止状态，可以用一些宏来判定。如果不关心，这位可以传入NULL。
+
+**options**:指定一些附加的选项。最常见的是WNOHANG告知没有已终止内核时不要阻塞。
+
+#### 返回值
+
+成功：返回已终止进程的PID，如果使用了WNOHANG同时没有以退出的进程可收集，返回0；
+
+失败：返回-1，原因存在errno中
+
+### signal
+
+头文件:signal.h
+
+`typedef void(\*sigHandler)(int);`
+
+`sigHandler signal(int sigNum,sigHandler handler);`
+
+将信号处理函数绑定到信号上
+
+**signum**:指定信号类型
+
+**handler**:信号处理函数，也可以使用SIG_IGN表示忽略该信号，SIGDFL表示使用默认的处理
+
+#### 返回值
+
+成功：返回信号处理函数指针
+
+失败：返回SIG_ERR（-1）
+
+### select
+
+头文件:sys/select.h sys/time.h
+
+`int select(int maxfdp1,fd_set *readset,fd_set *writeset,fd_set *exceptset,const struct timeval *timeout);`
+
+当readset中描述符可读，writeset中的可写，exceptset中的有错误是select函数返回
+
+**maxfdp1**:三个描述符集合中，描述符最大值加1的值。告知内核检查到哪一个描述符。
+
+**readset**：需要检查可读的描述符集合
+
+**timeout**：如果select阻塞时间超过了timeout规定值，select函数返回
+
+#### 返回值
+
+情况1：如果有就绪的，返回就绪描述符个数
+
+情况2：超时，返回0
+
+情况3：出错，返回-1
+
+#### 用法
+
+参见 ../echoServer/version_2/echoCli.c
+
+### shutdown
+
+头文件：sys/socket.h
+
+`int shutdown(int sockfd,int howto);`
+
+激发TCP终止序列，不管套接字的引用计数；可以指定关闭连接读这一半/关闭连接写这一半
+
+**sockfd**:操作的套接字
+
+**howto**：SHUT_RD关闭读那一半，SHUT_WR关闭写那一半，SHUT_RDWR都关闭。
+
+#### 返回值
+
+成功：返回0
+失败：返回-1
+
+### poll
+
+头文件：poll.h
+
+`int poll(struct pollfd *fdarray,unsigned long nfds,int timeout)`
+
+功能类似于select
+
+**fdarray**：每个需要监测的描述符对应一个结构体，将所有需要监测的描述符结构体组成一个数组
+
+**nfds**：结构体数组中的元素个数
+
+**timeout**：等待时长
+
+#### 返回值
+
+情况1：返回就绪的描述符个数
+
+情况2：超时，返回0
+
+情况3：出错，返回-1
+
