@@ -114,3 +114,44 @@ l表示参数一个一个给出； v表示参数由参数数组给出； e表示
 成功:返回非负整数
 失败:返回EOF（值为-1）
 
+### waitpid
+
+头文件：sys/wait.h;sys/types.h提供pid_t的定义
+
+用于处理僵死进程。
+
+`pid_t waitpid(pid_t pid,int *statloc,int options);`
+
+**pid**:指定想要等待的进程ID，值-1表示等待的第一个终止的子进程。 
+
+**statloc**:用来获取子进程的中止状态，可以用一些宏来判定。如果不关心，这位可以传入NULL。
+
+**options**:指定一些附加的选项。最常见的是WNOHANG告知没有已终止内核时不要阻塞。
+
+#### 返回值
+
+成功：返回已终止进程的PID，如果使用了WNOHANG同时没有以退出的进程可收集，返回0；
+
+失败：返回-1，原因存在errno中
+
+### signal
+
+头文件:signal.h
+
+`typedef void(\*sigHandler)(int);`
+
+`sigHandler signal(int sigNum,sigHandler handler);`
+
+将信号处理函数绑定到信号上
+
+**signum**:指定信号类型
+
+**handler**:信号处理函数，也可以使用SIG_IGN表示忽略该信号，SIGDFL表示使用默认的处理
+
+#### 返回值
+
+成功：返回信号处理函数指针
+
+失败：返回SIG_ERR（-1）
+
+
