@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = 
-objectname = ForOffer Function StackToQueQ7 testGlobal
+objectname = echoCli echoServ
 
 .PHONY : TARGET
 TARGET : $(objectname)
@@ -13,7 +13,7 @@ $(objectname) : %:%.c
 
 .PHONY : clean
 clean :
-	-rm ForOffer $(objects)
+	-rm $(objectname)
 	
 
 
