@@ -218,3 +218,115 @@ l表示参数一个一个给出； v表示参数由参数数组给出； e表示
 情况2：超时，返回0
 
 情况3：出错，返回-1
+
+### recvfrom
+
+头文件：sys/socket.h
+
+从UDP服务端套接字与未调用connect函数的UDP客户端套接字接收对端数据
+
+`ssize_t recvfrom(int sockfd,void *buff,size_t nbytes,
+            
+int flags.struct sockaddr *from,socklen_t *addrlen)`
+
+**sockfd**:套接字符号
+
+**buff，nbytes**：存储接受信息的缓冲区及其大小
+
+**flags**：暂默认为0
+
+**from，addrlen**：数据源地址及其长度:
+
+#### 返回值
+
+成功：返回读到的字节数
+
+失败：返回-1
+
+### sendto
+
+用于UDP服务端套接字与未调用connect函数的UDP客户端套接字。
+
+`ssize_t sendto(int sockfd,const void *buff,size_t nbytes,
+            
+int flags,const struct sockaddr *to,socklen_t addrlen);`
+
+#### 注释
+
+参数和返回值参见recvfrom
+
+### getaddrinfo
+
+头文件：netdb.h
+
+有主机名和服务名，获得与协议类型无关的地址信息
+
+int getaddrinfo(const char *hostname,const char *service,const struct addrinfo *hints,struct addrinfo **result);
+
+**hostname,service**:主机名称，服务名称
+
+**struct addrinfo**：定义在netdb.h中info
+
+struct addrinfo
+{
+  int ai_flags;			/* Input flags.  */
+  int ai_family;		/* Protocol family for socket.AF_xxx  like AF_INET,还可以指定AF_UNSPEC，表示可以返回IPv4和IPv6*/
+  int ai_socktype;		/* Socket type. SOCK_xxx like SOCK_STREAM */
+  int ai_protocol;		/* Protocol for socket.  */
+  socklen_t ai_addrlen;		/* Length of socket address.  */
+  struct sockaddr *ai_addr;	/* Socket address for socket.  */
+  char *ai_canonname;		/* Canonical name for service location.  */
+  struct addrinfo *ai_next;	/* Pointer to next in list.  */
+};
+
+**hints**:可以设置ai_flags/family/socktype/protocol;用来控制函数的返回值;hint可以为空指针。
+
+|ai_flags|说明|
+|----|-----|
+|AI_PASSIVE|套接字用于被动打开（服务器）|
+|AI_CANONAM|返回主机的规范名字|
+|AI_NUMERICHOST/SERV|hostname,service必须是数字形式的|
+|AI_V4MAPPED|无IPv6时，使用IPv4的映射地址|
+|AI_ADDRCONFIG|按照所在主机配置选择返回地址类型|
+
+**result**:返回结果，是一个函数内部动态分配的一个链表，使用完需要由用户释放。
+
+#### 返回值
+
+成功：返回0；
+
+失败：返回错误码，使用gai_strerror()获取错误信息。
+
+### gai_strerror
+
+const char *gai_strerror(int error);
+
+**error**:getaddrinfo的非零返回值
+
+#### 返回值
+
+错误信息的字符串。
+
+#### freeaddrinfo
+
+void freeaddrinfo(struct addrinfo *ai);
+
+释放getaddrinfo函数内部动态分配的空间。
+
+### getnameinfo
+
+`int getnameinfo(const struct sockaddr *sockaddr,socklen_t addrlen,char *host,socklen_t hostlen,char *serv,socklen_t servlen,int flags);`
+
+注：
+
+sockaddr一般由accept，recvfrom，getsockname。getpeername等返回。
+
+hostlen，servlen为零，表示对对应的信息不感兴趣。
+
+flags，用于控制函数的行为。
+
+#### 返回值
+
+成功：返回0
+
+失败：返回非0
