@@ -150,9 +150,29 @@ l表示参数一个一个给出； v表示参数由参数数组给出； e表示
 
 #### 返回值
 
-成功：返回信号处理函数指针
+成功：返回原信号处理函数指针（该函数指针可用于信号处理函数的恢复）。
 
 失败：返回SIG_ERR（-1）
+
+#### 注：
+
+signal设置的信号处理函数在使用完，要恢复原来处理函数。
+
+### alarm
+
+头文件：unistd.h
+
+`unsigned int alarm(unsigned int seconds);`
+
+seconds:设置系统经过seconds秒后，发送SIGALRM给当前进程，其默认信号处理函数为中断进程。  当seconds为零时，取消定时。 
+
+#### 返回值
+
+上次计时未结束：返回上次计时的剩余时间，并覆盖上次计时（对于seconds为零也适用）
+
+#### 说明
+
+如果设置了信号处理函数，当前进程运行的函数会返回，并置errno=EINTR。  结合这一特性，alarm函数可以用于为connect，read，write等设置超时。
 
 ### select
 
@@ -168,6 +188,14 @@ l表示参数一个一个给出； v表示参数由参数数组给出； e表示
 
 **timeout**：如果select阻塞时间超过了timeout规定值，select函数返回
 
+```c
+struct timeval
+{
+    __time_t tv_sec;    //seconds
+    __suseconds_t tv_usec;  //Microseconds
+}
+```
+
 #### 返回值
 
 情况1：如果有就绪的，返回就绪描述符个数
@@ -179,6 +207,10 @@ l表示参数一个一个给出； v表示参数由参数数组给出； e表示
 #### 用法
 
 参见 ../echoServer/version_2/echoCli.c
+
+#### 注意
+
+每次调用select函数，其readset，writeset，timeval等都会被改变，下次调用前需要重新设置。
 
 ### shutdown
 
@@ -255,6 +287,79 @@ int flags,const struct sockaddr *to,socklen_t addrlen);`
 
 参数和返回值参见recvfrom
 
+### recvmsg
+
+该函数集合了read，readv，recv。recvfrom的功能，是最全面的接收函数。
+
+`ssize_recvmsg(int sockfd,struct msghdr *msg,int flags);`
+
+**flags**:设置函数性质的标志位。可以参照unix网络编程14章的说明或者头文件。
+
+```c
+struct msghdr
+  {
+    void *msg_name;		/* Address to send to/receive from.  */
+    socklen_t msg_namelen;	/* Length of address data.  */
+
+    struct iovec *msg_iov;	/* Vector of data to send/receive into.  */
+    size_t msg_iovlen;		/* Number of elements in the vector.  */
+
+    void *msg_control;		/* Ancillary data (eg BSD filedesc passing). */
+    size_t msg_controllen;	/* Ancillary data buffer length.
+				   !! The type should be socklen_t but the
+				   definition of the kernel is incompatible
+				   with this.  */
+
+    int msg_flags;		/* Flags on received message.  */
+  };
+
+/* Size of object which can be written atomically.
+
+   This macro has different values in different kernel versions.  The
+   latest versions of the kernel use 1024 and this is good choice.  Since
+   the C library implementation of readv/writev is able to emulate the
+   functionality even if the currently running kernel does not support
+   this large value the readv/writev call will not fail because of this.  */
+#define UIO_MAXIOV	1024
+
+/* Structure for scatter/gather I/O.  */
+struct iovec
+  {
+    void *iov_base;	/* Pointer to data.  */
+    size_t iov_len;	/* Length of data.  */
+  };
+
+/* Structure used for storage of ancillary data object information.  */
+struct cmsghdr
+{
+    size_t cmsg_len;		/* Length of data in cmsg_data plus length
+				   of cmsghdr structure.
+				   !! The type should be socklen_t but the
+				   definition of the kernel is incompatible
+				   with this.  */
+    int cmsg_level;		/* Originating protocol.  */
+    int cmsg_type;		/* Protocol specific type.  */
+};
+
+```
+其中前两项用于非连接套接字，用来返回对端的地址。对于已连接套接字，msg_name应该为NULL。
+
+iovec相关的两项用于多缓冲区操作。可以将接收到的数据存储到msg_iov数组指定的各个缓冲区中。按顺序存，存满一个缓冲区后，存下一个缓冲区。
+
+msg_control两项是辅助数据(也称为控制信息)缓冲区的首地址和大小.辅助数据一般结合套接字选项，返回或者传递一些额外的数据。一个msg_control缓冲区可能用来返回多组数据，因此需要有一个结构定义单个数据，这个结构就是cmsghdr，其中存储着该组数组的信息。由于不同数据之间存在填充，因此定义了一些宏定义来处理存储在msg_control中的数据。宏定义定义在sys/param.h文件中。
+
+msg_flags 只有recvmsg使用。用来将flags的值传递给内核，并将内核更新后的值返回。
+
+### sendmsg
+
+可以实现send，sendto，write，writev的功能，是功能最全面的发送函数。
+
+`ssize_t sendmsg(int sockfd,struct msghdr *msg,int flags);`
+
+#### 注
+
+参数解析参见recvmsg
+
 ### getaddrinfo
 
 头文件：netdb.h
@@ -330,3 +435,29 @@ flags，用于控制函数的行为。
 成功：返回0
 
 失败：返回非0
+
+### getsockopt和setsockopt
+
+头文件：sys/socket.h
+
+用来获取当前套接字选项；设置套接字选项
+
+`int getsockopt(int sockfd,int level,int optname,void *optval,socklen_t *optlen);`
+
+`int setsockopt(int sockfd,int level,int optname,void *optval,socklen_t optlen);`
+
+#### 参数
+
+**sockfd**:一个已经打开的套接字
+
+**level**:指明optname属于哪一类型。参见unix网络编程第七章或上网搜索。
+
+**optname**:指明要设置的套接字选项名称。
+
+**optval&optlen**:指定存储套接字选项返回值或设置值的buffer。
+
+#### 返回值
+
+成功：返回0
+
+失败：返回-1
