@@ -1,0 +1,107 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AF_INET6	inet_ntop.c	36;"	d	file:
+AF_INET6	inet_pton.c	36;"	d	file:
+AF_INET6	test_inet_pton.c	4;"	d	file:
+AF_LOCAL	getaddrinfo.c	71;"	d	file:
+AI_CANONNAME	addrinfo.h	23;"	d
+AI_CLONE	getaddrinfo.c	119;"	d	file:
+AI_PASSIVE	addrinfo.h	22;"	d
+EAI_ADDRFAMILY	addrinfo.h	36;"	d
+EAI_AGAIN	addrinfo.h	37;"	d
+EAI_BADFLAGS	addrinfo.h	38;"	d
+EAI_FAIL	addrinfo.h	39;"	d
+EAI_FAMILY	addrinfo.h	40;"	d
+EAI_MEMORY	addrinfo.h	41;"	d
+EAI_NODATA	addrinfo.h	42;"	d
+EAI_NONAME	addrinfo.h	43;"	d
+EAI_SERVICE	addrinfo.h	44;"	d
+EAI_SOCKTYPE	addrinfo.h	45;"	d
+EAI_SYSTEM	addrinfo.h	46;"	d
+HENTBUFSIZ	getaddrinfo.c	115;"	d	file:
+HENTBUFSIZ	getnameinfo.c	42;"	d	file:
+HENTMAXADDR	getaddrinfo.c	116;"	d	file:
+IN6ADDRSZ	inet_ntop.c	32;"	d	file:
+IN6ADDRSZ	inet_pton.c	31;"	d	file:
+INADDRSZ	inet_pton.c	32;"	d	file:
+INET6	getaddrinfo.c	23;"	d	file:
+INET_ADDRSTRLEN	inet_ntop_ipv4.c	7;"	d	file:
+INT16SZ	inet_ntop.c	33;"	d	file:
+INT16SZ	inet_pton.c	33;"	d	file:
+IPV4	getaddrinfo.c	53;"	d	file:
+IPV4	getnameinfo.c	30;"	d	file:
+IPV6	getaddrinfo.c	58;"	d	file:
+IPV6	getaddrinfo.c	60;"	d	file:
+IPV6	getnameinfo.c	33;"	d	file:
+LOCAL	getaddrinfo.c	68;"	d	file:
+NI_DGRAM	addrinfo.h	33;"	d
+NI_MAXHOST	addrinfo.h	26;"	d
+NI_MAXSERV	addrinfo.h	27;"	d
+NI_NAMEREQD	addrinfo.h	31;"	d
+NI_NOFQDN	addrinfo.h	29;"	d
+NI_NUMERICHOST	addrinfo.h	30;"	d
+NI_NUMERICSERV	addrinfo.h	32;"	d
+PF_LOCAL	getaddrinfo.c	74;"	d	file:
+RES_USE_INET6	getaddrinfo.c	509;"	d	file:
+_SOCKADDR_LEN	getaddrinfo.c	22;"	d	file:
+__addrinfo_h	addrinfo.h	2;"	d
+addrinfo	addrinfo.h	/^struct addrinfo {$/;"	s
+addrinfo::ai_addr	addrinfo.h	/^  struct sockaddr	*ai_addr;	\/* binary address *\/$/;"	m	struct:addrinfo	typeref:struct:addrinfo::sockaddr	access:public
+addrinfo::ai_addrlen	addrinfo.h	/^  size_t	ai_addrlen;			\/* length of ai_addr *\/$/;"	m	struct:addrinfo	access:public
+addrinfo::ai_canonname	addrinfo.h	/^  char		*ai_canonname;		\/* canonical name for host *\/$/;"	m	struct:addrinfo	access:public
+addrinfo::ai_family	addrinfo.h	/^  int		ai_family;			\/* PF_xxx *\/$/;"	m	struct:addrinfo	access:public
+addrinfo::ai_flags	addrinfo.h	/^  int		ai_flags;			\/* AI_PASSIVE, AI_CANONNAME *\/$/;"	m	struct:addrinfo	access:public
+addrinfo::ai_next	addrinfo.h	/^  struct addrinfo	*ai_next;	\/* next structure in linked list *\/$/;"	m	struct:addrinfo	typeref:struct:addrinfo::addrinfo	access:public
+addrinfo::ai_protocol	addrinfo.h	/^  int		ai_protocol;		\/* IPPROTO_xxx for IPv4 and IPv6 *\/$/;"	m	struct:addrinfo	access:public
+addrinfo::ai_socktype	addrinfo.h	/^  int		ai_socktype;		\/* SOCK_xxx *\/$/;"	m	struct:addrinfo	access:public
+addrinfo_local	getaddrinfo.c	/^addrinfo_local(const char *path, struct addrinfo *hints,$/;"	f	file:	signature:(const char *path, struct addrinfo *hints, struct addrinfo **result)
+addrinfo_local	getaddrinfo.c	/^static int	addrinfo_local(const char *, struct addrinfo *,$/;"	p	file:	signature:(const char *, struct addrinfo *, struct addrinfo **)
+ai_addr	addrinfo.h	/^  struct sockaddr	*ai_addr;	\/* binary address *\/$/;"	m	struct:addrinfo	typeref:struct:addrinfo::sockaddr	access:public
+ai_addrlen	addrinfo.h	/^  size_t	ai_addrlen;			\/* length of ai_addr *\/$/;"	m	struct:addrinfo	access:public
+ai_canonname	addrinfo.h	/^  char		*ai_canonname;		\/* canonical name for host *\/$/;"	m	struct:addrinfo	access:public
+ai_family	addrinfo.h	/^  int		ai_family;			\/* PF_xxx *\/$/;"	m	struct:addrinfo	access:public
+ai_flags	addrinfo.h	/^  int		ai_flags;			\/* AI_PASSIVE, AI_CANONNAME *\/$/;"	m	struct:addrinfo	access:public
+ai_next	addrinfo.h	/^  struct addrinfo	*ai_next;	\/* next structure in linked list *\/$/;"	m	struct:addrinfo	typeref:struct:addrinfo::addrinfo	access:public
+ai_protocol	addrinfo.h	/^  int		ai_protocol;		\/* IPPROTO_xxx for IPv4 and IPv6 *\/$/;"	m	struct:addrinfo	access:public
+ai_socktype	addrinfo.h	/^  int		ai_socktype;		\/* SOCK_xxx *\/$/;"	m	struct:addrinfo	access:public
+do_ipv46	getnameinfo.c	/^do_ipv46(char *host, size_t hostlen, char *serv, size_t servlen,$/;"	f	file:	signature:(char *host, size_t hostlen, char *serv, size_t servlen, void *aptr, size_t alen, int family, int port)
+do_ipv46	getnameinfo.c	/^static int	do_ipv46(char *, size_t, char *, size_t,$/;"	p	file:	signature:(char *, size_t, char *, size_t, void *, size_t, int, int)
+error	getaddrinfo.c	158;"	d	file:
+freeaddrinfo	getaddrinfo.c	/^freeaddrinfo(struct addrinfo *aihead)$/;"	f	signature:(struct addrinfo *aihead)
+getaddrinfo	getaddrinfo.c	/^getaddrinfo(const char *host, const char *serv,$/;"	f	signature:(const char *host, const char *serv, const struct addrinfo *hintsptr, struct addrinfo **result)
+getaddrinfo_clone	getaddrinfo.c	/^getaddrinfo_clone(struct addrinfo *ai)$/;"	f	file:	signature:(struct addrinfo *ai)
+getaddrinfo_clone	getaddrinfo.c	/^static struct addrinfo	*getaddrinfo_clone(struct addrinfo *);$/;"	p	file:	signature:(struct addrinfo *)
+getaddrinfo_host	getaddrinfo.c	/^getaddrinfo_host(const char *host,$/;"	f	file:	signature:(const char *host, struct hostent *hptr, struct hostent **hptrptr, char *buf, int bufsiz, int family)
+getaddrinfo_host	getaddrinfo.c	/^static int	getaddrinfo_host(const char *, struct hostent *,$/;"	p	file:	signature:(const char *, struct hostent *, struct hostent **, char *, int, int)
+getaddrinfo_port	getaddrinfo.c	/^getaddrinfo_port(struct addrinfo *aihead, int port, int socktype)$/;"	f	file:	signature:(struct addrinfo *aihead, int port, int socktype)
+getaddrinfo_port	getaddrinfo.c	/^static int	getaddrinfo_port(struct addrinfo *, int , int);$/;"	p	file:	signature:(struct addrinfo *, int , int)
+getaddrinfo_serv	getaddrinfo.c	/^getaddrinfo_serv(struct addrinfo *aihead,$/;"	f	file:	signature:(struct addrinfo *aihead, const struct addrinfo *hintsptr, const char *serv, struct servent *sptrarg, char *buf, int bufsiz)
+getaddrinfo_serv	getaddrinfo.c	/^static int	getaddrinfo_serv(struct addrinfo *,$/;"	p	file:	signature:(struct addrinfo *, const struct addrinfo *, const char *, struct servent *, char *, int)
+getnameinfo	getnameinfo.c	/^getnameinfo(const struct sockaddr *sa, size_t salen,$/;"	f	signature:(const struct sockaddr *sa, size_t salen, char *host, size_t hostlen, char *serv, size_t servlen)
+hints_default	getaddrinfo.c	/^static struct addrinfo	hints_default;$/;"	v	typeref:struct:addrinfo	file:
+in_cksum	in_cksum.c	/^in_cksum(uint16_t *addr, int len)$/;"	f	signature:(uint16_t *addr, int len)
+inet_aton	inet_aton.c	/^inet_aton(const char *cp, struct in_addr *ap)$/;"	f	signature:(const char *cp, struct in_addr *ap)
+inet_aton	inet_pton_ipv4.c	/^int		 inet_aton(const char *, struct in_addr *);$/;"	p	file:	signature:(const char *, struct in_addr *)
+inet_ntop	inet_ntop.c	/^inet_ntop(af, src, dst, size)$/;"	f
+inet_ntop	inet_ntop_ipv4.c	/^inet_ntop(int family, const void *addrptr, char *strptr, size_t len)$/;"	f	signature:(int family, const void *addrptr, char *strptr, size_t len)
+inet_ntop4	inet_ntop.c	/^inet_ntop4(src, dst, size)$/;"	f	file:
+inet_ntop4	inet_ntop.c	/^static const char *inet_ntop4(const u_char *src, char *dst, size_t size);$/;"	p	file:	signature:(const u_char *src, char *dst, size_t size)
+inet_ntop6	inet_ntop.c	/^inet_ntop6(src, dst, size)$/;"	f	file:
+inet_ntop6	inet_ntop.c	/^static const char *inet_ntop6(const u_char *src, char *dst, size_t size);$/;"	p	file:	signature:(const u_char *src, char *dst, size_t size)
+inet_pton	getaddrinfo.c	/^int	 inet_pton(int, const char *, void *);$/;"	p	file:	signature:(int, const char *, void *)
+inet_pton	inet_pton.c	/^inet_pton(af, src, dst)$/;"	f
+inet_pton	inet_pton_ipv4.c	/^inet_pton(int family, const char *strptr, void *addrptr)$/;"	f	signature:(int family, const char *strptr, void *addrptr)
+inet_pton	test_inet_pton.c	/^int		inet_pton(int, const char *, void *);$/;"	p	file:	signature:(int, const char *, void *)
+inet_pton4	inet_pton.c	/^inet_pton4(src, dst)$/;"	f	file:
+inet_pton4	inet_pton.c	/^static int	inet_pton4(const char *src, u_char *dst);$/;"	p	file:	signature:(const char *src, u_char *dst)
+inet_pton6	inet_pton.c	/^inet_pton6(src, dst)$/;"	f	file:
+inet_pton6	inet_pton.c	/^static int	inet_pton6(const char *src, u_char *dst);$/;"	p	file:	signature:(const char *src, u_char *dst)
+main	test_ascii2addr.c	/^main()$/;"	f
+main	test_getservbyname_r.c	/^main()$/;"	f
+main	test_inet_pton.c	/^main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+rcsid	inet_ntop.c	/^static char rcsid[] = "$Id: inet_ntop.c,v 1.1.1.1 2002\/11\/14 03:33:35 fenner Exp $";$/;"	v	file:
+rcsid	inet_pton.c	/^static char rcsid[] = "$Id: inet_pton.c,v 1.1.1.1 2002\/11\/14 03:33:35 fenner Exp $";$/;"	v	file:

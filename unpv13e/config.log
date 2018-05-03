@@ -116,7 +116,7 @@ configure:3112: $? = 0
 configure:3121: result: yes
 configure:3185: checking for t_open in -lnsl
 configure:3210: gcc -o conftest -g -O2 -D_REENTRANT   conftest.c -lnsl  -lpthread  >&5
-/tmp/ccx1K67l.o: In function `main':
+/tmp/ccONINdp.o: In function `main':
 /home/max/gitProject/UNPLearning/unpv13e/conftest.c:22: undefined reference to `t_open'
 collect2: error: ld returned 1 exit status
 configure:3210: $? = 1
@@ -159,7 +159,7 @@ configure:3305: checking for /home/max/libresolv.a
 configure:3312: result: no
 configure:3314: checking for res_init in -lresolv
 configure:3339: gcc -o conftest -g -O2 -D_REENTRANT   conftest.c -lresolv  -lpthread  >&5
-/tmp/cclfoC8p.o: In function `main':
+/tmp/cc9tuNex.o: In function `main':
 /home/max/gitProject/UNPLearning/unpv13e/conftest.c:22: undefined reference to `res_init'
 collect2: error: ld returned 1 exit status
 configure:3339: $? = 1
@@ -1688,7 +1688,7 @@ configure:5675: $? = 0
 configure:5675: result: yes
 configure:5687: checking for kqueue
 configure:5687: gcc -o conftest -g -O2 -D_REENTRANT   conftest.c -lpthread  >&5
-/tmp/cc4OGW9s.o: In function `main':
+/tmp/ccjRQZvP.o: In function `main':
 /home/max/gitProject/UNPLearning/unpv13e/conftest.c:101: undefined reference to `kqueue'
 collect2: error: ld returned 1 exit status
 configure:5687: $? = 1
@@ -1800,7 +1800,7 @@ configure: failed program was:
 configure:5687: result: no
 configure:5687: checking for kevent
 configure:5687: gcc -o conftest -g -O2 -D_REENTRANT   conftest.c -lpthread  >&5
-/tmp/cc2AjLPu.o: In function `main':
+/tmp/ccOspFVI.o: In function `main':
 /home/max/gitProject/UNPLearning/unpv13e/conftest.c:101: undefined reference to `kevent'
 collect2: error: ld returned 1 exit status
 configure:5687: $? = 1
