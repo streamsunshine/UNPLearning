@@ -1,0 +1,18 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CC	makefile	/^CC = gcc$/;"	m
+CFLAGS	makefile	/^CFLAGS = -lpthread$/;"	m
+MAXLEN	echoCli.c	/^const unsigned int MAXLEN = 100;$/;"	v
+MAXLEN	echoServ.c	/^const unsigned int MAXLEN = 100;$/;"	v
+copyto	echoCli.c	/^void *copyto(void * sockfd)$/;"	f	signature:(void * sockfd)
+copyto	echoCli.c	/^void *copyto(void * sockfd);$/;"	p	file:	signature:(void * sockfd)
+main	echoCli.c	/^int main(int args,char **argv)$/;"	f	signature:(int args,char **argv)
+main	echoServ.c	/^int main()$/;"	f
+objectname	makefile	/^objectname = echoCli echoServ$/;"	m
+portNum	echoServ.c	/^const int portNum = 7;$/;"	v
+str_serv	echoServ.c	/^void *str_serv(void *sockfdPtr)$/;"	f	signature:(void *sockfdPtr)
+str_serv	echoServ.c	/^void *str_serv(void *sockfdPtr);$/;"	p	file:	signature:(void *sockfdPtr)

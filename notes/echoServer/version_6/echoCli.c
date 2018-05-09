@@ -7,203 +7,128 @@
 #include <sys/errno.h>  //errno
 #include <stdlib.h>     //exit
 #include <string.h>     //strlen
-#include <sys/select.h> //select
-#include <sys/time.h>   //struct timeval
-#include <netdb.h>      //getaddrinfo
+#include <netdb.h>      //DNS,addr-name,name-addr
 
-#define max(a,b) (a)>(b)?(a):(b)
-
-
-const int portNum = 80;
-void str_cli(FILE *fp,int sockfd);
-int Connect(int sockfd,const struct sockaddr *servaddr,socklen_t addrlen);
+void *copyto(void * sockfdPtr);
+const unsigned int MAXLEN = 100;
 
 int main(int args,char **argv)
 {
     int sockfd;
-    struct addrinfo hints,*result;
-    const char *hostname = "www.foobar.com";
-    const char *dataReq = {};
-    int n;
-
-    if(args != 2)
-    {
-        printf("Connect to www.foobar.con\n");
-    }
-    else
-    {
-        hostname = argv[1];
-    }
+    struct addrinfo hints,*result = NULL;
+    struct addrinfo *tmpAddrinfoPtr = NULL;
+    int reValue;
+    char inStr[MAXLEN];
+    pthread_t tid;
 
     bzero(&hints,sizeof(struct addrinfo));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
-    n = getaddrinfo(&hostname,&portname,&hints,&result);
-
-    if(n != 0)
+    if(args != 2)       //如果用户忘记输入地址，使用默认地址
     {
-        printf("%s",gai_strerror(errno));
+        printf("Use localhost!\n");
+        reValue = getaddrinfo("localhost","echo",&hints,&result);
+    }
+    else
+    {
+        reValue = getaddrinfo(argv[1],"echo",&hints,&result);
+    }
+
+    if(reValue != 0)
+    {
+        printf("%s",gai_strerror(reValue));
         exit(-1);
     }
 
-    tmpAddrPtr = result;
-    while(tmpAddrPtr != NULL)
+    tmpAddrinfoPtr = result;
+    while(tmpAddrinfoPtr != NULL)       //顺序检验返回结果，寻找有效的地址
     {
-        for(int i = 0;i < conTotal - conNum;i++)
+        if((sockfd = socket(tmpAddrinfoPtr->ai_family,tmpAddrinfoPtr->ai_socktype,tmpAddrinfoPtr->ai_protocol)) < 0)
         {
-        if((sockfd = socket(tmpAddrPtr->ai_family,tmpAddrPtr->ai_socktype,0)) < 0)
-        {
-            break;
+            printf("socketfd create wrong");
+            exit(-1);
         }
-
-        flags = fcntl(sockfd,F_GETFL,0);
-        fcntl(sockfd,flags | O_NONBLOCK);
-
-        if(connect(sockfd,(struct sockaddr *)tmpAddrPtr->ai_addr,tmpAddrPtr->ai_addrlen) < 0)
+        if(connect(sockfd,tmpAddrinfoPtr->ai_addr,tmpAddrinfoPtr->ai_addrlen) < 0)
         {
-            if(errno == EINPROGRESS)
-            {
-                FD_SET(sockfd,&checkSet);
-                maxCheckfd = max(maxCheckfd,sockfd);
-            }
-            else
-            {
-                close(sockfd);
-              break;
-            }
+            close(sockfd);
+            tmpAddrinfoPtr = tmpAddrinfoPtr->ai_next;
         }
         else
         {
-            conNum++;
-            FD_SET(sockfd,&connectSet);
-            maxConnectfd = max(maxConnectfd,sockfd);
+            break;
         }
-        }
-
-        t.tv_sec = connectTimeoutS;
-        t.tv_usec = connectTimeoutUs;
-
-        count = 0;          //计算检测的套接字中，可读的有多少
-        while(count < checkfdArraySize)
-        {
-            tmpFd = maxCheckfd;
-            tmpT = t;
-            n = select(maxCheckfd + 1,NULL,&tmpfd,NULL,&t);
-            if(n <= 0)
-              break;
-            for(i = 0;i < checkfdArraySize;i++)
-            {
-                if(FD_ISSET(checkfdArray[i],tmpfd))
-                {
-                    len = sizeof(error);
-                    n = getsockopt(checkfdArray[i],SOL_SOCKET,SO_ERROR,&error,&len);
-                    if(n >= 0)
-                    {
-                        FD_SET(checkfdArray[i],connectSet);
-                        maxConnectfd = max(maxConnectfd,checkfdArray[i]);
-                        conNum ++;
-                    }
-                    else
-                    {
-                        close(checkfdArray[i];
-                    }
-                    count++;
-                    FD_CLR(checkfdArray[i].&maxCheckfd);
-                }
-            }
-        }
-        if(conNum == 0)
-          tmpAddrPtr = tmpAddrPtr.ai_next;
     }
-
-    if(tmpAddrPtr == NULL)
+    if(tmpAddrinfoPtr == NULL)      //连接失败，退出
     {
-        printf("connect to server %s failed",hostname);
+        printf("can not connect to the host!");
         exit(-1);
     }
-    freeaddrinfo(result);
+
+    freeaddrinfo(result);       //释放getaddrinfo函数内分配的空间
+    //从端口获得数据并发送到服务器，使用线程
+    pthread_create(&tid,NULL,&copyto,(void *)&sockfd);
     
-    str_cli(stdin,sockfd);
-    printf("The client is shut!");
-}
-
-const unsigned int MAXLEN = 100;
-
-void str_cli(FILE *fp,int sockfd)
-{
-    char inStr[MAXLEN];
-    char wrStr[MAXLEN];
-    unsigned int curLen;
-    int n; 
-    unsigned int sendNum = 0;
-    fd_set readSet;     //设置读监测集合
-    int endOfTerminal = 0; //标志位，在解决问题二的同时，判断程序是正常关闭还出现异常
-
-    FD_ZERO(&readSet);  //清零集合 FD相关的指令是宏定义的
-    
+    //接收服务器的回射数据并显示到端口
     while(1)
     {
-        if(endOfTerminal == 0)
-          FD_SET(fileno(fp),&readSet);    //fileno求出描述符,FD_SET设置集合
-        FD_SET(sockfd,&readSet);        //使用select函数，解决问题1
-
-        if((n = select(max(fileno(fp),sockfd) + 1,&readSet,NULL,NULL,NULL)) <0)
+        reValue = read(sockfd,inStr,MAXLEN);
+        if(reValue < 0)      
         {
-            if(errno == EINTR)
-              continue;
+            printf("Read from server failed!");
+            exit(-1);
         }
-        
-        if(FD_ISSET(sockfd,&readSet))
+        else if(reValue == 0)
         {
-            n = read(sockfd,inStr,MAXLEN);      //使用read读出数据解决问题三
-            if(n < 0)      //read after write can not be EOF
-            {
-                printf("Read from server failed!");
-                exit(-1);
-            }
-            if(n == 0)
-            {
-                if(endOfTerminal == 1)  //说明客户端在终端输入了EOF
-                  return;
-                printf("Can not get data from server!");
-            }
-            
-            n = write(fileno(fp),inStr,n);
-            if(n <= 0)
-            {
-                printf("Write to terminal wrong!");
-                exit(-1);
-            }
-
-
+            printf("The server close\n");
+            exit(0);
         }
-
-        if(FD_ISSET(fileno(fp),&readSet))
+        if(write(fileno(stdout),inStr,reValue) < 0)
         {
-             n = read(fileno(fp),wrStr,MAXLEN);
-            if(n < 0)      //read after write can not be EOF
-            {
-                printf("Read from terminal failed!");
-                exit(-1);
-            }
-            if(n == 0)
-            {
-                shutdown(sockfd,SHUT_WR);   //关闭写，解决问题二
-                endOfTerminal = 1;
-                FD_CLR(fileno(fp),&readSet);    //不会再从终端读数据了，所以不再监测
-                continue;
-            }
-
-            n = write(sockfd,wrStr,n);
-            if(n <= 0)
-            {
-                printf("Write to socket wrong!");
-                exit(-1);
-            }
+            printf("fputs error!");
+            exit(-1);
         }
     }
 }
 
 
-int Connect(int sockfd,const struct sockaddr *servaddr,socklen_t addrlen);
+void *copyto(void * sockfdPtr)
+{
+    unsigned int curLen;
+    char buffer[MAXLEN];
+    int n; 
+    unsigned int sendNum = 0;
+    int sockfd = *(int *)sockfdPtr; 
+
+    while(fgets(buffer,MAXLEN,stdin))
+    {
+        sendNum = 0;
+
+        curLen = strlen(buffer);
+    
+        while(sendNum < curLen) //make sure all data was written
+        {
+            n = write(sockfd,buffer + sendNum,curLen - sendNum);
+            if(n < 0)
+            {
+                if(errno == EINTR)
+                {   
+                    n = 0;      //清零，防止后面影响发送计数
+                   continue;
+                }
+                else
+                {
+                    printf("Write to socket wrong!");
+                    exit(0);
+                }
+            }
+            if(n == 0)
+                break;
+            sendNum += n;
+        }
+        if(sendNum != curLen)
+            printf("This data can not send completely!\n");
+    }
+    shutdown(sockfd,SHUT_WR);   //向服务器发送FIN分节
+    return NULL;
+}

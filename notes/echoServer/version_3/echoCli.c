@@ -96,7 +96,7 @@ void str_cli(FILE *fp,int sockfd)
                 else
                 {
                     printf("Write to socket wrong!");
-                    exit(-1);
+                    exit(0);
                 }
             }
             if(n == 0)

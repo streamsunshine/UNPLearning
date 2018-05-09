@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = 
+CFLAGS = -lpthread
 objectname = echoCli echoServ
 
 .PHONY : TARGET
