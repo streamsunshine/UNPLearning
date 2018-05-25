@@ -989,7 +989,7 @@ struct rusage {
 
 ### pthread_join
 
-等待给定线程终止
+等待给定线程终止（阻塞）
 
 `int pthread_join(pthreat_t *tid,void **status);`
 
@@ -1001,6 +1001,41 @@ struct rusage {
 
 成功:返回0
 失败:返回正的错误值
+
+### pthread_cancel
+
+等待给定线程终止（阻塞）
+
+`int pthread_cancel(pthreat_t tid);`
+
+**tid**:要取消的线程的ID，取消是指不等待线程终止，向线程发送要求进程终止请求，不过线程可以选择忽略或者控制如何被取消。
+
+#### 返回值
+
+成功:返回0
+失败:返回正的错误值
+
+### pthread_cleanup_push
+
+设置线程退出时，其调用的函数。线程退出时调用的函数称为线程清理处理程序。
+
+`void pthread_cleanup_push(void (*rtn)(void *),void *arg)`
+
+**rtn**：为线程退出时，想要调用的函数
+
+**arg**：为传递给函数rtn的参数
+
+#### 说明
+
+其中设置的函数，只在线程1、自身调用pthread_exit()退出时。2、其他线程调用pthread_cancel取消线程时。3、如果上面两个没有使用，则在pthread_clean_up_pop的参数非零的时候，会调用清理处理程序。
+
+调用线程清理处理程序的顺序，和该函数设置的顺序相反。
+
+### pthread_cleanup_pop
+
+`void pthread_cleanup_pop(int execute)`
+
+**execute**:当线程运行该函数时，如果execute不为零，则运行线程清理处理程序，如果为零，则不运行，但是同样会删除push建立的线程清理处理程序。
 
 ### pthread_self
 
