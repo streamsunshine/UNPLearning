@@ -1144,6 +1144,38 @@ value一般指向一段动态分配的内存区
 
 加锁的位置也是根据访问全局变量或者静态变量的情况.
 
+使用多个互斥锁相互嵌套时，防止死锁发生。1、将资源访问排序，即对互斥锁访问排序。2、在上锁前，使用pthread_mutex_trylock测试，如果不能获得锁，就先释放所有已获得锁。如果能够获得则继续运行。
+
+### pthread_mutex_init
+
+用来初始化互斥量
+
+`int pthread_mutex_init(pthread_mutex_t *restrict mutex,const pthread_mutexattr_t *restrict attr);`
+
+**mutex**:需要初始化的互斥量的指针，可以是静态声明的变量取地址得到的，也可以是使用malloc动态分配的。对于动态分配的互斥量，在free之前，需要调用pthread_mutex_destroy。
+
+**attr**:互斥量的属性，如果设置为NULL，则使用默认的进行初始化。
+
+#### 返回值
+
+成功：0
+
+失败：正的错误值
+
+### pthread_mutex_destroy
+
+用来destroy互斥量（析构）
+
+`int pthread_mutex_destroy(pthread_mutex_t *mutex);`
+
+**mutex**:需要destroy的互斥量的指针
+
+#### 返回值
+
+成功：0
+
+失败：正的错误值
+
 ### pthread_mutex_lock
 
 用来加锁，在线程解锁前，其间的代码和数据不能被另一个线程访问。
@@ -1164,6 +1196,18 @@ value一般指向一段动态分配的内存区
 
 用于解锁，其余同上。
 
+### pthread_mutex_trylock
+
+当互斥锁锁住的时候，不阻塞，直接返回EBUSY错误。没锁住的时候则上锁，返回成功。
+
+`int pthread_mutex_trylock(pthread_mutex_t *mutex);`
+
+#### 返回值
+
+成功：0
+
+失败：正的错误值
+
 ### 互斥量属性
 
 互斥量的属性使用pthread_mutexattr_t结构进行设置。
@@ -1183,9 +1227,13 @@ value一般指向一段动态分配的内存区
 
 条件变量也定义为一个全局变量，需要和互斥锁搭配使用。
 
-pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;	//这里是静态初始化，还可以使用malloc分配，然后调用函数初始化
 
-pthread_cond_t c = PTHREAD_COND_INITIALIZER;
+pthread_cond_t c = PTHREAD_COND_INITIALIZER;	//这里是静态初始化，还可以使用malloc分配，然后调用函数初始化
+
+### pthread_cond_init/destroy
+
+说明参见mutex和读写锁。
 
 ### pthread_cond_wait
 
@@ -1218,6 +1266,104 @@ pthread_cond_t c = PTHREAD_COND_INITIALIZER;
 解阻塞所有等待该条件的线程。
 
 `int pthread_cond_broadcast(pthread_cond_t *cptr);`
+
+### 读写锁
+
+也叫共享互斥锁，共享指的是读模式，互斥指的是写模式。
+
+存在读加锁，写加锁，不加锁三种状态。读加锁状态下，不阻塞其他读加锁，但会阻塞写加锁请求，并同时不允许新的读请求，当现有读加锁处理完后，进入写加锁状态。写加锁状态下，会阻塞所有读/写加锁请求。
+
+使用前必须初始化，不论静态分配的还是动态分配的在释放之前，都要调用pthread_rwlock_destroy释放资源。
+
+### pthread_rwlock_init
+
+用来初始化读写锁，读写锁使用之前必须进行初始化。对于静态分配的读写锁，如果默认属性足够的话，可以使用PTHREAD_RWLOCK_INITTIALIZER进行初始化。
+
+`int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock,const pthread_rwlockattr_t *restrict attr);`
+
+**rwlock**:需要初始化的读写锁的指针，可以是静态声明的变量取地址得到的，也可以是使用malloc动态分配的。需要调用pthread_mutex_destroy。
+
+**attr**:读写锁的属性，如果设置为NULL，则使用默认的进行初始化。
+
+#### 返回值
+
+成功：0
+
+失败：正的错误值
+
+### pthread_rwlock_destroy
+
+用来destroy读写锁（析构）
+
+`int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);`
+
+**rwlock**:需要destroy的读写锁的指针
+
+#### 返回值
+
+成功：0
+
+失败：正的错误值
+
+### pthread_rwlock_rdlock/wrlock/unlock
+
+用来加读锁，加写锁，解锁（包括读锁和写锁）
+
+`int pthread_rwlock_rdlock/wrlock/unlock(pthread_rwlock_t *rwlock);`
+
+**rwlock**:读写锁变量的指针。
+
+#### 返回值
+
+成功：0
+
+失败：正的错误值
+
+#### 说明
+
+`int pthread_rwlock_rdlock/wrlock(pthread_rwlock_t *rwlock);`
+
+功能类似于pthread_mutex_trylock函数。
+
+`int pthread_rwlock_timedrdlock/wrlock(pthread_rwlock_t *restrict rwlock,const struct timespec *restrict tsptr);`
+
+带有超时的读写锁，指定的是绝对的时间。
+
+上述两个函数的返回值，和上面其他函数的返回值一样。
+
+### 自旋锁
+
+和互斥锁类似，使用方法和函数接口也基本相同，只要将mutex更换为spin即可。
+
+二者的区别在于，在等待锁时mutex会进入睡眠状态，不占用CPU；而spin会进入一个循环等待，还会占用CPU，所以只适合等待锁时间不长的应用中。
+
+### 屏障
+
+等待指定数量的线程到达某一点，然后会对其中的一个线程返回PTHREAD_BARRIER_SERIAL_THREAD（其他返回0），该线程可用于集中结果处理。也可以不用返回PTHREAD_BARRIER_SERIAL_THREAD的线程做结果处理，可以使用主线程做处理。
+
+### pthread_barrier_init
+
+`int pthread_barrier_init(pthread_barrier_t *restrict barrier,const pthread_barrierattr_t *restrict attr,unsigned int cout);`
+
+**count**:指定允许所有线程继续运行之前，必须到达屏障的线程数目。
+
+### pthread_barrier_destroy
+
+###  pthread_barrier_wait
+
+用来增加屏障技术，如果增加后没有达到要求，那么进入休眠状态。
+
+`int pthread_barrier_wait(pthread_barrier_t *barrier);`
+
+#### 返回值
+
+成功：0或PTHREAD_BARRIER_SERIAL_THREAD
+
+失败：正的错误值
+
+#### 说明
+
+到达屏障计数值后，并且线程处于非阻塞状态，则屏障可以被重用。除非destroy并进行新的初始化，否则屏障计数不会改变。
 
 ## 处理结构的整体函数
 这些函数将套接字当做以字节为单位的数组，进行操作。有两组具有相同功能的函数。
