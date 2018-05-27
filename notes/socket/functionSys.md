@@ -963,7 +963,19 @@ struct rusage {
 };
 ```
 
-## 线程函数
+## 线程
+
+### 线程对于信号的处理
+
+每个线程可以使用`int pthread_sigmask(int how,const sigset_t *restrict set,sigset_t *restrict oset);`设置自己的信号屏蔽字。设置完后相应的信号不会导致线程进入信号处理程序。
+
+线程可以调用`int sigwait(const sigset_t *restrict set,int *restrict signop);`等待set集合中的信号，在调用该函数前应该阻塞对应的信号。
+
+虽然线程有独立的信号屏蔽字，但是所有线程共享信号处理函数。进程会将信号发送到每一个线程，除了与硬件故障有关的它会直接发送到引发这个事件的线程中去。
+
+kill用于发送信号到进程，`int pthread_kill(pthread_t thread,int signo);`用于发送信号到特定的线程。
+
+有关线程属性，同步原语，同步原语属性的init和destroy的使用。对于静态分配的同步原语，一般都是全局性的，生命期包含整个程序运行期间，所以不会destroy。而对于动态分配的同步原语，一般其生命期都不包含整个程序生命期，需要在一定时刻释放，所以需要调用destroy。而对于线程属性和同步原语属性，它们在初始化后就不在有用，所以即使是静态声明的，也需要调用destroy释放空间。
 
 ### pthread_create
 
@@ -975,7 +987,7 @@ struct rusage {
 
 **tid**:用来返回线程ID
 
-**attr**:设置线程属性，使用默认属性则传入NULL
+**attr**:设置线程属性，可以设置线程是detach的还是join的，控制线程栈的大小/位置等与线程栈相关的属性。线程属性是一种类型的变量，有函数对其进行处理。使用默认属性则传入NULL。
 
 **func**:线程执行的函数。其形参对应着arg，返回值将在pthread_join函数中返回。
 
@@ -1014,6 +1026,15 @@ struct rusage {
 
 成功:返回0
 失败:返回正的错误值
+
+### 与线程取消相关的其他函数
+
+设置线程是否可被取消`int pthread_setcancelstate(int state,int *oldstate);`函数为原子操作
+
+设置线程取消检测点：`void pthread_testcancel(void);`线程取消，需要在特定的取消检测点进行，处理posix规定的，还可以自己设置。
+
+设置取消的类型：`int pthread_setcanceltype(int type,int *oldtype);`上面说的是“推迟取消”，还有“异步取消”不必等到取消点。
+
 
 ### pthread_cleanup_push
 
@@ -1096,7 +1117,7 @@ struct rusage {
 
 **keyptr**:用于返回数组下标。一般其对应的变量定义为全局变量，该变量应该被所有线程共享，且所有线程只读该变量，所以不存在线程不安全的问题。
 
-**destructor**:析构函数。
+**destructor**:析构函数。用来释放数组在键值处，存储的数据地址指向的数据。
 
 #### 返回值
 
@@ -1105,6 +1126,16 @@ struct rusage {
 成功：返回0
 
 失败：返回正的错误值
+
+### pthread_key_delete
+
+取消键与线程特定数据值之间的关联关系。但是不会激活与键关联的析构函数。
+
+`int  pthread_key_delete(pthread_key_t key);`
+
+### 返回值
+
+同上
 
 ### pthread_getspecific
 
@@ -1152,7 +1183,7 @@ value一般指向一段动态分配的内存区
 
 `int pthread_mutex_init(pthread_mutex_t *restrict mutex,const pthread_mutexattr_t *restrict attr);`
 
-**mutex**:需要初始化的互斥量的指针，可以是静态声明的变量取地址得到的，也可以是使用malloc动态分配的。对于动态分配的互斥量，在free之前，需要调用pthread_mutex_destroy。
+**mutex**:需要初始化的互斥量的指针，可以是静态声明的变量取地址得到的，也可以是使用malloc动态分配的。对于动态分配的互斥量，在free之前，需要调用pthread_mutex_destroy。对于静态则不需要调用destroy函数。静态分配是指不用malloc分配的。
 
 **attr**:互斥量的属性，如果设置为NULL，则使用默认的进行初始化。
 
@@ -1222,10 +1253,23 @@ value一般指向一段动态分配的内存区
 
 `int pthread_mutexattr_setpshared (pthread_mutexattr_t *attr,int pshared);`
 
+设置健壮性：当互斥量定义为shared时，其在进程间使用，当一个持有锁的进程终止时，由于他的锁没有释放，会影响其他进程/线程工作，如果设置属性为健壮，这种情况下会有通知，即在pthread_mutex_lock函数调用时，返回EOWNERDEAD。对于返回EOWNERDEAD的线程，如果直接解锁互斥量会导致该互斥量不再可用，如果想继续使用该互斥量，需要在解锁之前调用pthread_mutex_consistent函数，然后再解锁这样，互斥量就可以继续使用了。
+
+`int pthread_mutexattr_getrobust(const pthread_mutexattr_t *restrict attr,int *restrict robust);`
+
+`int pthread_mutexattr_setrobust(const pthread_mutexattr_t *restrict attr,int robust);`
+
+`int pthread_mutex_consistent(pthread_mutex_t *mutex);`
+
+定义类型：决定在进行，对没有解锁的互斥量加锁，对其他线程上锁的进行解锁，对已经解锁的进行解锁，三种操作时，会产生什么结果。四种类型。
+
+`int pthread_mutexattr_gettype(const pthread_mutexattr_t *restrict attr,int *restrict type);`
+
+`int pthread_mutexattr_settype(const pthread_mutexattr_t *restrict attr,int type);`
 
 ### 条件变量
 
-条件变量也定义为一个全局变量，需要和互斥锁搭配使用。
+条件变量也定义为一个全局变量，需要和互斥锁搭配使用。对于静态分配的不用调用destroy析构，对于动态分配的需要在free之前调用 destroy。但是对于静态分配的可以使用init进行初始化。
 
 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;	//这里是静态初始化，还可以使用malloc分配，然后调用函数初始化
 
@@ -1234,6 +1278,8 @@ pthread_cond_t c = PTHREAD_COND_INITIALIZER;	//这里是静态初始化，还可
 ### pthread_cond_init/destroy
 
 说明参见mutex和读写锁。
+
+属性有进程共享属性和时钟属性，时钟属性用来指定timedwait函数的计时时钟。
 
 ### pthread_cond_wait
 
@@ -1273,11 +1319,13 @@ pthread_cond_t c = PTHREAD_COND_INITIALIZER;	//这里是静态初始化，还可
 
 存在读加锁，写加锁，不加锁三种状态。读加锁状态下，不阻塞其他读加锁，但会阻塞写加锁请求，并同时不允许新的读请求，当现有读加锁处理完后，进入写加锁状态。写加锁状态下，会阻塞所有读/写加锁请求。
 
-使用前必须初始化，不论静态分配的还是动态分配的在释放之前，都要调用pthread_rwlock_destroy释放资源。
+对于静态分配的不用调用destroy析构，对于动态分配的需要在free之前调用 destroy。但是对于静态分配的可以使用init进行初始化。
 
 ### pthread_rwlock_init
 
 用来初始化读写锁，读写锁使用之前必须进行初始化。对于静态分配的读写锁，如果默认属性足够的话，可以使用PTHREAD_RWLOCK_INITTIALIZER进行初始化。
+
+读写锁的属性只要进程共享属性，设置类似mutex。
 
 `int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock,const pthread_rwlockattr_t *restrict attr);`
 
@@ -1340,6 +1388,8 @@ pthread_cond_t c = PTHREAD_COND_INITIALIZER;	//这里是静态初始化，还可
 ### 屏障
 
 等待指定数量的线程到达某一点，然后会对其中的一个线程返回PTHREAD_BARRIER_SERIAL_THREAD（其他返回0），该线程可用于集中结果处理。也可以不用返回PTHREAD_BARRIER_SERIAL_THREAD的线程做结果处理，可以使用主线程做处理。
+
+属性：只有进程共享属性。
 
 ### pthread_barrier_init
 
