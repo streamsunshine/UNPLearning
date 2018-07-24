@@ -1013,7 +1013,7 @@ prepare在创建子进程前获取所有的锁，然后创建子进程。此时�
 
 等待给定线程终止（阻塞）
 
-`int pthread_join(pthreat_t *tid,void **status);`
+`int pthread_join(pthreat_t tid,void **status);`
 
 **tid**:等待线程的ID
 
@@ -1363,6 +1363,28 @@ pthread_cond_t c = PTHREAD_COND_INITIALIZER;	//这里是静态初始化，还可
 
 失败：正的错误值
 
+### pthread_rwlockattr_init/destroy
+
+用来使用默认属性初始化属性变量/析构一个属性变量
+
+`int pthread_rwlockattr_init(pthread_rwlockattr_t *attr);`
+
+`int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr);`
+
+#### 返回值
+同上
+
+### pthread_rwlockattr_get/setpshared
+
+设置属性的值，当前只有PTHREAD_PROCESS_PRIVATE/SHARED
+
+`int pthread_rwlockattr_getpshared(const pthread_rwlockattr_t *attr,int *valptr);`
+
+`int pthread_rwlockattr_setpshared(pthread_rwlockattr_t *attr,int value);`
+
+#### 返回值
+同上
+
 ### pthread_rwlock_rdlock/wrlock/unlock
 
 用来加读锁，加写锁，解锁（包括读锁和写锁）
@@ -1379,9 +1401,9 @@ pthread_cond_t c = PTHREAD_COND_INITIALIZER;	//这里是静态初始化，还可
 
 #### 说明
 
-`int pthread_rwlock_rdlock/wrlock(pthread_rwlock_t *rwlock);`
+`int pthread_rwlock_tryrdlock/wrlock(pthread_rwlock_t *rwlock);`
 
-功能类似于pthread_mutex_trylock函数。
+功能类似于pthread_mutex_trylock函数，尝试获取锁，如果不能马上获得，返回一个EBUSY错误。
 
 `int pthread_rwlock_timedrdlock/wrlock(pthread_rwlock_t *restrict rwlock,const struct timespec *restrict tsptr);`
 
